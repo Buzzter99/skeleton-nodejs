@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const {registerUser,loginUser} = require('../services/usersService');
 const constants = require('../constants');
-const {redirectIfLoggedIn} = require('../middlewares/authenticationMiddleware');
+const {redirectIfLoggedIn, privateEndpoint} = require('../middlewares/authenticationMiddleware');
 router.get('/login',redirectIfLoggedIn, async (req, res) => {
     res.render('login', {title: 'Login Page'});
 });
@@ -28,7 +28,7 @@ router.post('/register', async (req, res) => {
     }
     res.redirect('/');
 })
-router.get('/logout',redirectIfLoggedIn, async (req, res) => {
+router.get('/logout',privateEndpoint, async (req, res) => {
     res.clearCookie(constants.COOKIE_NAME);
     res.redirect('/');
 });

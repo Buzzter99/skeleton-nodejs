@@ -20,14 +20,14 @@ async function authenticationMiddleware(req,res,next) {
     return next();
 }
 async function privateEndpoint(req,res,next) {
-    const isLoggedIn = res.user;
+    const isLoggedIn = req.user;
     if(!isLoggedIn) {
         return res.redirect('/');
     }
     return next();
 }
 async function redirectIfLoggedIn(req,res,next) {
-    if(res.user) {
+    if(req.user) {
         return res.redirect('/');
     }
     return next();

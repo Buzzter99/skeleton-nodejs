@@ -15,7 +15,7 @@ async function authenticationMiddleware(req,res,next) {
         res.redirect('/users/login');
         return next();
     }
-    res.user = payload;
+    req.user = payload;
     res.locals.user = payload;
     return next();
 }

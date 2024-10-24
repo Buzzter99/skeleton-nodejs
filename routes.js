@@ -3,7 +3,6 @@ const userController = require('./controllers/userController');
 const homeController = require('./controllers/homeController');
 router.use('/users',userController);
 router.use('/',homeController);
-router.use('/volcanoes',volcanoController);
 router.all('*', (req, res) => {
     return res.render('404', { title: '404 Page' });
 })

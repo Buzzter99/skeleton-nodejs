@@ -32,4 +32,8 @@ async function loginUser({email, password}) {
     const token = jwt.sign(payload, JWT_SECRET, {expiresIn: '2h'});
     return token;
 }
-module.exports = {registerUser,loginUser}
+async function getAllUsers() {
+    const users = await User.find({},'username email');
+    return users;
+}
+module.exports = {registerUser,loginUser,getAllUsers};

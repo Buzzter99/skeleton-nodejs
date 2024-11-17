@@ -12,7 +12,6 @@ async function authenticationMiddleware(req,res,next) {
         payload = jwt.verify(token, JWT_SECRET);
     } catch (error) {
         res.clearCookie(constants.COOKIE_NAME);
-        res.redirect('/users/login');
         return next();
     }
     req.user = payload;
@@ -22,14 +21,10 @@ async function authenticationMiddleware(req,res,next) {
 async function privateEndpoint(req,res,next) {
     const isLoggedIn = req.user;
     if(!isLoggedIn) {
-        return res.redirect('/');
+        return res.status(401).json({
+            message: 'Authentication credentials are missing or invalid.'
+          });
     }
     return next();
 }
-async function redirectIfLoggedIn(req,res,next) {
-    if(req.user) {
-        return res.redirect('/');
-    }
-    return next();
-}
-module.exports = {authenticationMiddleware,privateEndpoint,redirectIfLoggedIn}
+module.exports = {authenticationMiddleware,privateEndpoint}

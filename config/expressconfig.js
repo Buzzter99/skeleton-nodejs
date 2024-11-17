@@ -1,8 +1,8 @@
 const express = require('express');
-const path = require('path');
+const cors = require('cors');
+const {corsOptions} = require('./corsConfig');
 function expressConfig(app) {
-    app.use('/static', express.static('static'));
     app.use(express.json());
-    app.use(express.urlencoded({ extended: true })); 
+    app.use(cors(corsOptions));
 }
 module.exports = {expressConfig};

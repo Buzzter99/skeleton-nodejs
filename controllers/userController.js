@@ -1,35 +1,45 @@
 const router = require('express').Router();
-const {registerUser,loginUser} = require('../services/usersService');
+const {registerUser,loginUser,getAllUsers} = require('../services/usersService');
 const constants = require('../constants');
-const {redirectIfLoggedIn, privateEndpoint} = require('../middlewares/authenticationMiddleware');
-router.get('/login',redirectIfLoggedIn, async (req, res) => {
-    res.render('login', {title: 'Login Page'});
-});
+const {privateEndpoint} = require('../middlewares/authenticationMiddleware');
+
+
+router.get('/All', async (req, res) => {
+    let users;
+    try {
+        users = await getAllUsers();
+    } catch (error) {
+        return res.status(400).json({message: error.message});
+    }
+    return res.status(200).json(users);
+})
 router.post('/login', async (req, res) => {
     let token;
     try {
-      token = await loginUser(req.body);
+    const { email, password } = req.body;
+    token = await loginUser({ email, password });
     } catch (error) {
-      return res.render('login',{errorMsg: error, title: 'Login Page',...req.body});
+      return res.status(400).json({message: error.message});
     }
-    res.cookie(constants.COOKIE_NAME, token, {httpOnly: true,maxAge: 2 * 60 * 60 * 1000});
-    res.redirect('/');
+    res.cookie(constants.COOKIE_NAME, token, {httpOnly: false,maxAge: 2 * 60 * 60 * 1000});
+    return res.status(200).json({message: 'Logged in successfully!'});
 })
-router.get('/register',redirectIfLoggedIn, async (req, res) => {
-    res.render('register', {title: 'Register Page'});
-});
+
 router.post('/register', async (req, res) => {
     try {
-        await registerUser(req.body);
-        const token = await loginUser(req.body);
-        res.cookie(constants.COOKIE_NAME, token, {httpOnly: true,maxAge: 2 * 60 * 60 * 1000});
+        const {email,username, password,repeatPassword} = req.body;
+        await registerUser({email,username, password,repeatPassword});
     } catch (error) {
-        return res.render('register',{errorMsg: error, title: 'Register Page',...req.body});
+        return res.status(400).json({message: error.message});
     }
-    res.redirect('/');
+    return res.status(200).json({message: 'Account created successfully!'});
 })
-router.get('/logout',privateEndpoint, async (req, res) => {
-    res.clearCookie(constants.COOKIE_NAME);
-    res.redirect('/');
+router.post('/logout',privateEndpoint, async (req, res) => {
+    try {
+        res.clearCookie(constants.COOKIE_NAME);
+    } catch (error) {
+    return res.status(400).json({message: error.message});
+    }
+    return res.status(200).json({message: 'Logged out successfully!'});
 });
 module.exports = router

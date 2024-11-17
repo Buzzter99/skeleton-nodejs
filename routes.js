@@ -1,9 +1,9 @@
 const router = require('express').Router();
 const userController = require('./controllers/userController');
-const homeController = require('./controllers/homeController');
-router.use('/users',userController);
-router.use('/',homeController);
+const forumPostController = require('./controllers/forumPostController');
+router.use('/forumPost',forumPostController);
+router.use('/user',userController);
 router.all('*', (req, res) => {
-    return res.render('404', { title: '404 Page' });
+    return res.status(404).json({ message: 'Error 404 Page not found' });
 })
 module.exports = {router};
